@@ -14,7 +14,8 @@ public class CityInfector implements InfectionListener{
 		if (!infectionLevel.outbreakLevelReached()) {
 			cubeBank.takeCube(infectionEvent.disease);
 			city.infect(infectionEvent.disease);
-		}
-	}
+            World.eventBus.publish(new InfectionAppliedEvent(infectionEvent.disease, infectionEvent.cityName, city.infectionLevelFor(infectionEvent.disease)));
+        }
+    }
 
 }

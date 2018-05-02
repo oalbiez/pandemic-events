@@ -21,7 +21,7 @@ public class World {
 
     public static void create() {
         gameState = GameState.AVAILABLE;
-        eventBus = new EventBus();
+        eventBus = new AsyncEventBus();
         network = new Network();
         cubeBank = new CubeBank();
         outbreakCounter = new OutbreakCounter();

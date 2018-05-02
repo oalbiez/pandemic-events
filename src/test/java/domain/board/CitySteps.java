@@ -9,8 +9,10 @@ import domain.infection.Disease;
 import domain.infection.InfectionLevel;
 import infra.World;
 import org.assertj.core.api.Assertions;
+import run.AsyncAssertions;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static domain.board.CityName.*;
@@ -44,13 +46,18 @@ public class CitySteps {
 			List<CityInfectionLevel> expectedCityInfectionLevels) throws Throwable {
 
 		expectedCityInfectionLevels.forEach(cityInfectionLevel -> Assertions
-				.assertThat(World.network.get(cityInfectionLevel.cityName).infectionLevelFor(Disease.BLUE))
-				.as(cityInfectionLevel.cityName + " blueInfectionLevel").isEqualTo(cityInfectionLevel.getBlueLevel()));
+                .assertThat(AsyncAssertions.isTrueWithin(() ->
+                                World.network.get(cityInfectionLevel.cityName).infectionLevelFor(Disease.BLUE).equals(cityInfectionLevel.getBlueLevel()),
+                        1, TimeUnit.SECONDS))
+                .as(cityInfectionLevel.cityName + " blueInfectionLevel").isTrue());
 
-		expectedCityInfectionLevels.forEach(cityInfectionLevel -> Assertions
-				.assertThat(World.network.get(cityInfectionLevel.cityName).infectionLevelFor(Disease.BLACK))
-				.as(cityInfectionLevel.cityName + " blackInfectionLevel").isEqualTo(cityInfectionLevel.getBlackLevel()));
-	}
+
+        expectedCityInfectionLevels.forEach(cityInfectionLevel -> Assertions
+                .assertThat(AsyncAssertions.isTrueWithin(() ->
+                                World.network.get(cityInfectionLevel.cityName).infectionLevelFor(Disease.BLACK).equals(cityInfectionLevel.getBlackLevel()),
+                        1, TimeUnit.SECONDS))
+                .as(cityInfectionLevel.cityName + " blackInfectionLevel").isTrue());
+    }
 
 	@And("^(.*) should be linked to (.*).$")
 	public void cityShouldBeLinkedToLinkedCities(CityName cityName, List<CityName> linkedCities) throws Throwable {

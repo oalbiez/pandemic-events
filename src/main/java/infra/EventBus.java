@@ -1,53 +1,37 @@
 package infra;
 
-
 import domain.cube.NoAvailableCubeLeftEvent;
 import domain.cube.NoAvailableCubeLeftListener;
+import domain.infection.InfectionAppliedEvent;
+import domain.infection.InfectionAppliedListener;
 import domain.infection.InfectionEvent;
 import domain.infection.InfectionListener;
 import domain.infection.outbreak.OutbreakEvent;
 import domain.infection.outbreak.OutbreakListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class EventBus {
+/**
+ * Created by yann on 03/03/18.
+ */
+public interface EventBus {
+    void listenOutbreak(OutbreakListener listener);
 
-    final List<OutbreakEvent> outbreakEvents = new ArrayList<>();
-    private final List<InfectionEvent> infectionEvents = new ArrayList<>();
-    private final List<InfectionListener> infectionListeners = new ArrayList<>();
-    private final List<OutbreakListener> outbreakListeners = new ArrayList<>();
-    private final List<NoAvailableCubeLeftListener> noAvailableCubeLeftListeners = new ArrayList<>();
-    NoAvailableCubeLeftEvent noAvailableCubeLeftEvent;
+    void listenInfection(InfectionListener listener);
 
-    void listenOutbreak(OutbreakListener listener){
-        outbreakListeners.add(listener);
-    }
+    void listenNoAvailableCubeLeft(NoAvailableCubeLeftListener listener);
 
-    void listenInfection(InfectionListener listener){
-        infectionListeners.add(listener);
-    }
+    void listenInfectionApplied(InfectionAppliedListener listener);
 
-    void listenNoAvailableCubeLeft(NoAvailableCubeLeftListener listener) {
-        noAvailableCubeLeftListeners.add(listener);
-    }
+    void publish(InfectionEvent infectionEvent);
 
-    public void publish(InfectionEvent infectionEvent){
-        infectionEvents.add(infectionEvent);
-        for (InfectionListener infectionListener : infectionListeners) {
-            infectionListener.onInfection(infectionEvent);
-        }
-    }
+    void publish(OutbreakEvent outbreakEvent);
 
-    public void publish(OutbreakEvent outbreakEvent){
-        outbreakEvents.add(outbreakEvent);
-        for (OutbreakListener outbreakListener : outbreakListeners) {
-            outbreakListener.onOutbreak(outbreakEvent);
-        }
-    }
+    void publish(NoAvailableCubeLeftEvent noAvailableCubeLeftEvent);
 
-    public void publish(NoAvailableCubeLeftEvent noAvailableCubeLeftEvent) {
-        this.noAvailableCubeLeftEvent = noAvailableCubeLeftEvent;
-        noAvailableCubeLeftListeners.forEach(l -> l.onNoAvailableCubeLeft(noAvailableCubeLeftEvent));
-    }
+    void publish(InfectionAppliedEvent infectionAppliedEvent);
+
+    @Deprecated
+        //Replace this method by OutbreakAppliedEvent + Listener
+    List<OutbreakEvent> getOutbreakEvents();
 }
